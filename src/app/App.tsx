@@ -206,10 +206,13 @@ const quizQuestions: Question[] = [
 type QuizState = 'welcome' | 'quiz' | 'results';
 
 export default function App() {
+  console.log("App component rendering");
   const [quizState, setQuizState] = useState<QuizState>('welcome');
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<number, string[] | string>>({});
   const [selectedOption, setSelectedOption] = useState<string[] | string | null>(null);
+
+  console.log("Quiz state:", quizState);
 
   const handleStart = () => {
     setQuizState('quiz');
