@@ -1,0 +1,137 @@
+import { useState } from 'react';
+import { motion } from 'motion/react';
+import { ChevronLeft } from 'lucide-react';
+import { ProgressBar } from '@/app/components/ProgressBar';
+
+interface PersonalInfoScreenProps {
+  onContinue: (data: { firstName: string; age: string; email: string }) => void;
+  onBack: () => void;
+  initialData?: { firstName: string; age: string; email: string };
+}
+
+export function PersonalInfoScreen({ onContinue, onBack, initialData }: PersonalInfoScreenProps) {
+  const [firstName, setFirstName] = useState(initialData?.firstName || '');
+  const [age, setAge] = useState(initialData?.age || '');
+  const [email, setEmail] = useState(initialData?.email || '');
+
+  const isValid = () => {
+    return firstName.trim() !== '' && age.trim() !== '' && email.trim() !== '';
+  };
+
+  const handleContinue = () => {
+    if (isValid()) {
+      onContinue({ firstName, age, email });
+    }
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.3 }}
+      className="min-h-screen bg-[#f2f2f7] flex flex-col"
+    >
+      {/* Header */}
+      <div className="bg-[#f2f2f7] sticky top-0 z-10">
+        {/* Progress Bar Section */}
+        <div className="h-[44px] relative flex items-center justify-center px-4">
+          <button
+            onClick={onBack}
+            className="absolute left-4 bg-white rounded-full w-[34px] h-[34px] flex items-center justify-center"
+          >
+            <ChevronLeft className="w-5 h-5" />
+          </button>
+          <div className="flex items-center justify-center">
+            <ProgressBar current={12} total={12} />
+          </div>
+        </div>
+
+        {/* Title Section */}
+        <div className="px-6 py-3">
+          <h1 className="text-[32px] font-semibold leading-[120%] tracking-[0.4px] text-black mb-4">
+            Tell us a little about{' '}
+            <span className="text-[#0a84ff]">yourself</span>
+          </h1>
+          <p className="text-[17px] font-medium leading-[22px] tracking-[-0.43px] text-[rgba(60,60,67,0.6)]">
+            This helps us personalize your blood sugar insights.
+          </p>
+        </div>
+      </div>
+
+      {/* Form Content */}
+      <div className="flex-1 px-6 pt-6 pb-32">
+        <div className="space-y-4">
+          {/* First Name */}
+          <div>
+            <label 
+              htmlFor="firstName" 
+              className="block text-[13px] font-medium tracking-[-0.08px] text-[rgba(60,60,67,0.6)] mb-2 ml-4"
+            >
+              First name
+            </label>
+            <input
+              id="firstName"
+              type="text"
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+              placeholder="Enter your first name"
+              className="w-full px-4 py-4 bg-white rounded-[20px] text-[17px] leading-[22px] tracking-[-0.43px] text-black placeholder:text-[rgba(60,60,67,0.3)] border-none focus:outline-none focus:ring-2 focus:ring-[#0a84ff]"
+            />
+          </div>
+
+          {/* Age */}
+          <div>
+            <label 
+              htmlFor="age" 
+              className="block text-[13px] font-medium tracking-[-0.08px] text-[rgba(60,60,67,0.6)] mb-2 ml-4"
+            >
+              Age
+            </label>
+            <input
+              id="age"
+              type="number"
+              value={age}
+              onChange={(e) => setAge(e.target.value)}
+              placeholder="Enter your age"
+              className="w-full px-4 py-4 bg-white rounded-[20px] text-[17px] leading-[22px] tracking-[-0.43px] text-black placeholder:text-[rgba(60,60,67,0.3)] border-none focus:outline-none focus:ring-2 focus:ring-[#0a84ff]"
+            />
+          </div>
+
+          {/* Email */}
+          <div>
+            <label 
+              htmlFor="email" 
+              className="block text-[13px] font-medium tracking-[-0.08px] text-[rgba(60,60,67,0.6)] mb-2 ml-4"
+            >
+              Email address
+            </label>
+            <input
+              id="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Enter your email"
+              className="w-full px-4 py-4 bg-white rounded-[20px] text-[17px] leading-[22px] tracking-[-0.43px] text-black placeholder:text-[rgba(60,60,67,0.3)] border-none focus:outline-none focus:ring-2 focus:ring-[#0a84ff]"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Bottom Button Section */}
+      <div className="fixed bottom-0 left-0 right-0 max-w-[430px] mx-auto bg-[#f2f2f7] pb-8 pt-4 px-6">
+        <button
+          onClick={handleContinue}
+          disabled={!isValid()}
+          className={`w-full py-4 rounded-[20px] transition-colors text-[17px] font-medium leading-[22px] tracking-[-0.43px] ${
+            isValid()
+              ? 'bg-[#f14e58] text-white'
+              : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+          }`}
+        >
+          Continue
+        </button>
+      </div>
+    </motion.div>
+  );
+}

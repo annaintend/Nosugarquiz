@@ -2,7 +2,19 @@ import { useState } from 'react';
 import { AnimatePresence } from 'motion/react';
 import { WelcomeScreen } from '@/app/components/WelcomeScreen';
 import { QuizQuestion } from '@/app/components/QuizQuestion';
-import { ResultsScreen } from '@/app/components/ResultsScreen';
+import { PaywallScreen } from '@/app/components/PaywallScreen';
+import { IntermediateScreen } from '@/app/components/IntermediateScreen';
+import { WeeklyPatternQuestion } from '@/app/components/WeeklyPatternQuestion';
+import { WeeklyFeedbackScreen } from '@/app/components/WeeklyFeedbackScreen';
+import { First30DaysScreen } from '@/app/components/First30DaysScreen';
+import { PersonalInfoScreen } from '@/app/components/PersonalInfoScreen';
+import { LoadingScreen } from '@/app/components/LoadingScreen';
+import { AnalysisCompleteScreen } from '@/app/components/AnalysisCompleteScreen';
+import { GoalsScreen } from '@/app/components/GoalsScreen';
+import { CurrentBalanceScreen } from '@/app/components/CurrentBalanceScreen';
+import { PotentialBalanceScreen } from '@/app/components/PotentialBalanceScreen';
+import { GreetingLoadingScreen } from '@/app/components/GreetingLoadingScreen';
+import { PlanBuiltScreen } from '@/app/components/PlanBuiltScreen';
 import { ProgressBar } from '@/app/components/ProgressBar';
 import { ChevronLeft } from 'lucide-react';
 
@@ -10,7 +22,8 @@ interface Question {
   id: number;
   question: string;
   options: Array<{
-    text: string;
+    value: string;
+    label: string;
     supportText: string;
   }>;
   isMultiSelect: boolean;
@@ -19,206 +32,341 @@ interface Question {
 const quizQuestions: Question[] = [
   {
     id: 1,
-    question: "What frustrates you most about your relationship with sugar?",
-    isMultiSelect: true,
+    question: 'How do you currently see yourself in relation to food and blood sugar?',
     options: [
       {
-        text: "I don't understand how sugar affects my blood sugar",
-        supportText: "You're not alone. Most people never see how the same sugar can affect them differently day to day."
+        value: 'out-of-control',
+        label: 'I feel out of control around food',
+        supportText: "You're not failing — unpredictable blood sugar often creates this feeling.",
       },
       {
-        text: "I feel fine sometimes, but terrible other times — with no clear reason",
-        supportText: "This inconsistency is often a sign of blood sugar spikes and crashes, not lack of discipline."
+        value: 'trying-better',
+        label: "I'm trying to eat better, but it's confusing",
+        supportText: "Conflicting advice makes it hard to know what actually works for your body.",
       },
       {
-        text: "I try to eat 'normally', but still get energy crashes",
-        supportText: "Even 'normal' foods can cause glucose instability depending on timing, portion, and pairing."
+        value: 'learning-improving',
+        label: "I'm learning and improving step by step",
+        supportText: "That mindset is exactly how long-term stability is built.",
       },
       {
-        text: "I don't know how much sugar is okay for me personally",
-        supportText: "There is no universal limit. Your body has its own threshold — it just hasn't been mapped yet."
-      }
-    ]
+        value: 'need-tools',
+        label: 'I feel like I need better tools and feedback',
+        supportText: "Awareness and feedback matter more than stricter rules.",
+      },
+    ],
+    isMultiSelect: false,
   },
   {
     id: 2,
-    question: "How do you feel when others around you eat sugary foods freely?",
-    isMultiSelect: false,
+    question: 'What frustrates you most about your relationship with sugar?',
     options: [
       {
-        text: "Confused why their body seems to handle it better than mine",
-        supportText: "People have very different glycemic responses — comparison rarely tells the full story."
+        value: 'dont-understand',
+        label: "I don't understand how sugar affects my blood sugar",
+        supportText: "You're not alone. Most people never see how the same sugar can affect them differently day to day.",
       },
       {
-        text: "Worried I'll crash later if I eat the same",
-        supportText: "That anticipation often comes from past glucose crashes, not from the food itself."
+        value: 'inconsistent',
+        label: 'I feel fine sometimes, but terrible other times — with no clear reason',
+        supportText: "This inconsistency is often a sign of blood sugar spikes and crashes, not lack of discipline.",
       },
       {
-        text: "Frustrated that food affects my energy so unpredictably",
-        supportText: "Unpredictability usually means patterns exist — they just haven't been identified yet."
+        value: 'eat-normally',
+        label: 'I try to eat "normally", but still get energy crashes',
+        supportText: '"Normal" foods can still cause glucose instability depending on timing, portion, and pairing.',
       },
       {
-        text: "Confident when I understand my limits",
-        supportText: "Awareness changes everything. Knowing your limits removes anxiety from food choices."
-      }
-    ]
+        value: 'no-limit',
+        label: "I don't know how much sugar is okay for me personally",
+        supportText: "There is no universal limit. Your body has its own threshold — it just hasn't been mapped yet.",
+      },
+    ],
+    isMultiSelect: true,
   },
   {
     id: 3,
-    question: "Which area of your life has been most affected by unstable blood sugar?",
-    isMultiSelect: true,
+    question: "How do you typically handle social situations with sugary foods?",
+    isMultiSelect: false,
     options: [
       {
-        text: "My energy levels and focus",
-        supportText: "Blood sugar dips are one of the most common causes of fatigue and brain fog."
+        value: 'eat-without-knowing',
+        label: "I eat without knowing how I'll feel later",
+        supportText: "Lack of predictability often creates post-event regret or crashes."
       },
       {
-        text: "My mood and emotional stability",
-        supportText: "Rapid glucose changes can strongly influence irritability, anxiety, and mood swings."
+        value: 'avoid-certain-foods',
+        label: 'I avoid certain foods just in case',
+        supportText: "Avoidance is common when feedback is missing."
       },
       {
-        text: "My weight or body composition",
-        supportText: "Frequent insulin spikes can promote fat storage even without overeating."
+        value: 'anxious-overthink',
+        label: 'I feel anxious and overthink my choices',
+        supportText: "Uncertainty turns food into a cognitive burden."
       },
       {
-        text: "My relationship with food and eating",
-        supportText: "Uncertainty around food often leads to over-restriction or reactive eating."
+        value: 'adjust-portions',
+        label: 'I adjust portions and timing confidently',
+        supportText: "Awareness allows flexibility without loss of control."
       }
     ]
   },
   {
     id: 4,
-    question: "When do you most notice negative effects after eating?",
-    isMultiSelect: true,
+    question: 'How do you feel when others around you eat sugary foods freely?',
     options: [
       {
-        text: "After meals that should be 'healthy'",
-        supportText: "Even healthy foods can spike blood sugar if portions or combinations aren't right for you."
+        value: 'confused-comparison',
+        label: 'Confused why their body seems to handle it better than mine',
+        supportText: "People have very different glycemic responses — comparison rarely tells the full story.",
       },
       {
-        text: "In the afternoon or early evening",
-        supportText: "This is a classic window for delayed glucose crashes from earlier meals."
+        value: 'worried-crash',
+        label: "Worried I'll crash later if I eat the same",
+        supportText: "That anticipation often comes from past glucose crashes, not from the food itself.",
       },
       {
-        text: "When I'm stressed or overwhelmed",
-        supportText: "Stress raises blood sugar on its own, making food responses harder to predict."
+        value: 'frustrated-unpredictable',
+        label: 'Frustrated that food affects my energy so unpredictably',
+        supportText: "Unpredictability usually means patterns exist — they just haven't been identified yet.",
       },
       {
-        text: "During social events or eating out",
-        supportText: "Unfamiliar foods and timing often amplify blood sugar variability."
-      }
-    ]
+        value: 'confident-limits',
+        label: 'Confident when I understand my limits',
+        supportText: "Awareness changes everything. Knowing your limits removes anxiety from food choices.",
+      },
+    ],
+    isMultiSelect: false,
   },
   {
     id: 5,
-    question: "What's the biggest consequence you've experienced from unstable blood sugar?",
+    question: "Which area of your life has been most affected by unstable blood sugar?",
     isMultiSelect: true,
     options: [
       {
-        text: "Sudden energy crashes",
-        supportText: "These often come from delayed glucose drops after meals."
+        value: 'energy-focus',
+        label: 'My energy levels and focus',
+        supportText: "Blood sugar dips are one of the most common causes of fatigue and brain fog."
       },
       {
-        text: "Strong cravings that feel out of proportion",
-        supportText: "Cravings are frequently a physiological response, not a lack of control."
+        value: 'mood-stability',
+        label: 'My mood and emotional stability',
+        supportText: "Rapid glucose changes can strongly influence irritability, anxiety, and mood swings."
       },
       {
-        text: "Mood swings or irritability",
-        supportText: "Blood sugar fluctuations can directly affect emotional regulation."
+        value: 'weight-composition',
+        label: 'My weight or body composition',
+        supportText: "Frequent insulin spikes can promote fat storage even without overeating."
       },
       {
-        text: "Planning my day around food and energy",
-        supportText: "Unpredictability forces constant mental effort around eating."
+        value: 'food-relationship',
+        label: 'My relationship with food and eating',
+        supportText: "Uncertainty around food often leads to over-restriction or reactive eating."
       }
     ]
   },
   {
     id: 6,
-    question: "How would you feel if your energy and cravings were predictable?",
+    question: "When do you most notice negative effects after eating?",
     isMultiSelect: true,
     options: [
       {
-        text: "Calm and in control",
-        supportText: "Stability removes the constant background stress around food."
+        value: 'healthy-meals',
+        label: 'After meals that should be \'healthy\'',
+        supportText: "Even healthy foods can spike blood sugar if portions or combinations aren't right for you."
       },
       {
-        text: "Confident in my food choices",
-        supportText: "Confidence comes from understanding cause and effect."
+        value: 'afternoon-evening',
+        label: 'In the afternoon or early evening',
+        supportText: "This is a classic window for delayed glucose crashes from earlier meals."
       },
       {
-        text: "Free from constant food calculations",
-        supportText: "Less mental load means more space for life."
+        value: 'stress-overwhelm',
+        label: 'When I\'m stressed or overwhelmed',
+        supportText: "Stress raises blood sugar on its own, making food responses harder to predict."
       },
       {
-        text: "Focused and mentally clear",
-        supportText: "Stable glucose supports sustained cognitive performance."
+        value: 'social-events',
+        label: 'During social events or eating out',
+        supportText: "Unfamiliar foods and timing often amplify blood sugar variability."
       }
     ]
   },
   {
     id: 7,
-    question: "What would achieving blood sugar balance mean to you personally?",
+    question: "What symptoms are you experiencing?",
     isMultiSelect: true,
     options: [
       {
-        text: "Trusting my body again",
-        supportText: "Trust is rebuilt when signals become consistent."
+        value: 'energy-crashes',
+        label: 'Sudden energy crashes',
+        supportText: "These often come from delayed glucose drops after meals."
       },
       {
-        text: "Eating without fear or guilt",
-        supportText: "Food neutrality replaces restriction and anxiety."
+        value: 'strong-cravings',
+        label: 'Strong cravings that feel out of proportion',
+        supportText: "Cravings are frequently a physiological response, not a lack of control."
       },
       {
-        text: "Feeling consistent energy every day",
-        supportText: "Energy stability compounds into better days overall."
+        value: 'mood-swings',
+        label: 'Mood swings or irritability',
+        supportText: "Blood sugar fluctuations can directly affect emotional regulation."
       },
       {
-        text: "Supporting long-term health",
-        supportText: "Blood sugar balance is a cornerstone of metabolic health."
+        value: 'planning-around-food',
+        label: 'Planning my day around food and energy',
+        supportText: "Unpredictability forces constant mental effort around eating."
       }
     ]
   },
   {
     id: 8,
-    question: "How do you typically handle social situations with sugary foods?",
+    question: "What's the biggest consequence you've experienced from unstable blood sugar?",
+    isMultiSelect: true,
+    options: [
+      {
+        value: 'energy-crashes',
+        label: 'Sudden energy crashes',
+        supportText: "These often come from delayed glucose drops after meals."
+      },
+      {
+        value: 'strong-cravings',
+        label: 'Strong cravings that feel out of proportion',
+        supportText: "Cravings are frequently a physiological response, not a lack of control."
+      },
+      {
+        value: 'mood-swings',
+        label: 'Mood swings or irritability',
+        supportText: "Blood sugar fluctuations can directly affect emotional regulation."
+      },
+      {
+        value: 'planning-around-food',
+        label: 'Planning my day around food and energy',
+        supportText: "Unpredictability forces constant mental effort around eating."
+      }
+    ]
+  },
+  {
+    id: 9,
+    question: "How would you feel if your energy and cravings were predictable?",
+    isMultiSelect: true,
+    options: [
+      {
+        value: 'calm-control',
+        label: 'Calm and in control',
+        supportText: "Stability removes the constant background stress around food."
+      },
+      {
+        value: 'confident-choices',
+        label: 'Confident in my food choices',
+        supportText: "Confidence comes from understanding cause and effect."
+      },
+      {
+        value: 'free-calculations',
+        label: 'Free from constant food calculations',
+        supportText: "Less mental load means more space for life."
+      },
+      {
+        value: 'focused-clear',
+        label: 'Focused and mentally clear',
+        supportText: "Stable glucose supports sustained cognitive performance."
+      }
+    ]
+  },
+  {
+    id: 10,
+    question: "What would achieving blood sugar balance mean to you personally?",
+    isMultiSelect: true,
+    options: [
+      {
+        value: 'trust-body',
+        label: 'Trusting my body again',
+        supportText: "Trust is rebuilt when signals become consistent."
+      },
+      {
+        value: 'eat-without-fear',
+        label: 'Eating without fear or guilt',
+        supportText: "Food neutrality replaces restriction and anxiety."
+      },
+      {
+        value: 'consistent-energy',
+        label: 'Feeling consistent energy every day',
+        supportText: "Energy stability compounds into better days overall."
+      },
+      {
+        value: 'support-health',
+        label: 'Supporting long-term health',
+        supportText: "Blood sugar balance is a cornerstone of metabolic health."
+      }
+    ]
+  },
+  {
+    id: 11,
+    question: "What kind of support would make the biggest difference for you?",
+    isMultiSelect: true,
+    options: [
+      {
+        value: 'understand-body-response',
+        label: 'Understanding how my body responds to food',
+        supportText: "Knowing cause and effect removes guesswork from eating."
+      },
+      {
+        value: 'handle-crashes',
+        label: 'Tools to handle crashes or cravings in the moment',
+        supportText: "Real-time guidance helps when energy drops unexpectedly."
+      },
+      {
+        value: 'see-patterns',
+        label: 'Seeing patterns over time',
+        supportText: "Trends reveal what works — and what doesn't — for you."
+      },
+      {
+        value: 'track-progress',
+        label: 'Tracking progress without obsession',
+        supportText: "Clarity without pressure leads to consistency."
+      }
+    ]
+  },
+  {
+    id: 12,
+    question: "What is your gender?",
     isMultiSelect: false,
     options: [
       {
-        text: "I eat without knowing how I'll feel later",
-        supportText: "Lack of predictability often creates post-event regret or crashes."
+        value: 'male',
+        label: 'Male',
+        supportText: "We'll account for common metabolic and lifestyle patterns seen in men."
       },
       {
-        text: "I avoid certain foods just in case",
-        supportText: "Avoidance is common when feedback is missing."
+        value: 'female',
+        label: 'Female',
+        supportText: "We'll consider hormonal cycles and their impact on blood sugar."
       },
       {
-        text: "I feel anxious and overthink my choices",
-        supportText: "Uncertainty turns food into a cognitive burden."
-      },
-      {
-        text: "I adjust portions and timing confidently",
-        supportText: "Awareness allows flexibility without loss of control."
+        value: 'other',
+        label: 'Other / Prefer not to say',
+        supportText: "Your experience will be personalized based on your responses."
       }
     ]
   }
 ];
 
-type QuizState = 'welcome' | 'quiz' | 'results';
+type QuizState = 'welcome' | 'quiz' | 'intermediate' | 'weekly-pattern' | 'weekly-feedback' | 'first-30-days' | 'personal-info' | 'paywall' | 'loading' | 'analysis-complete' | 'goals' | 'current-balance' | 'potential-balance' | 'greeting-loading' | 'plan-built';
 
 export default function App() {
-  console.log("App component rendering");
   const [quizState, setQuizState] = useState<QuizState>('welcome');
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<number, string[] | string>>({});
   const [selectedOption, setSelectedOption] = useState<string[] | string | null>(null);
-
-  console.log("Quiz state:", quizState);
+  const [weeklyPatternAnswers, setWeeklyPatternAnswers] = useState<{ frequency: string; portion: string } | null>(null);
+  const [personalInfo, setPersonalInfo] = useState<{ firstName: string; age: string; email: string } | null>(null);
+  const [selectedGoals, setSelectedGoals] = useState<string[]>([]);
 
   const handleStart = () => {
     setQuizState('quiz');
     setCurrentQuestionIndex(0);
     setAnswers({});
-    setSelectedOption(null);
+    setSelectedOption(quizQuestions[0].isMultiSelect ? [] : null);
   };
 
   const handleSelectOption = (option: string) => {
@@ -248,11 +396,15 @@ export default function App() {
         [quizQuestions[currentQuestionIndex].id]: selectedOption,
       });
 
-      if (currentQuestionIndex < quizQuestions.length - 1) {
+      // Show intermediate screen after question 6
+      if (currentQuestionIndex === 5) {
+        setQuizState('intermediate');
+      } else if (currentQuestionIndex === quizQuestions.length - 1) {
+        // After last quiz question (question 12), show personal info screen
+        setQuizState('personal-info');
+      } else if (currentQuestionIndex < quizQuestions.length - 1) {
         setCurrentQuestionIndex(currentQuestionIndex + 1);
         setSelectedOption(quizQuestions[currentQuestionIndex + 1].isMultiSelect ? [] : null);
-      } else {
-        setQuizState('results');
       }
     }
   };
@@ -265,6 +417,13 @@ export default function App() {
     } else {
       setQuizState('welcome');
     }
+  };
+
+  const handleIntermediateBack = () => {
+    setQuizState('quiz');
+    setCurrentQuestionIndex(5);
+    const prevAnswer = answers[quizQuestions[5].id];
+    setSelectedOption(prevAnswer || (quizQuestions[5].isMultiSelect ? [] : null));
   };
 
   const handleRestart = () => {
@@ -281,97 +440,254 @@ export default function App() {
     return selectedOption !== null;
   };
 
-  const calculateScore = () => {
-    let score = 0;
-    quizQuestions.forEach((question) => {
-      if (answers[question.id] === question.correctAnswer) {
-        score++;
-      }
-    });
-    return score;
-  };
-
   const currentQuestion = quizQuestions[currentQuestionIndex];
 
+  // Function to split question for highlighting
+  const getQuestionParts = (question: string, questionId: number) => {
+    // For question 1, highlight "blood sugar?"
+    if (questionId === 1) {
+      const parts = question.split('blood sugar?');
+      return {
+        main: parts[0] + 'blood sugar',
+        highlight: '?',
+      };
+    }
+    // For other questions, highlight last 2 words
+    const words = question.split(' ');
+    return {
+      main: words.slice(0, -2).join(' '),
+      highlight: words.slice(-2).join(' '),
+    };
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 flex flex-col">
-      {/* Header */}
-      <div className="bg-white shadow-sm sticky top-0 z-10">
-        <div className="max-w-4xl mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            {quizState === 'quiz' && (
+    <div className="min-h-screen bg-[#f2f2f7] flex flex-col max-w-[430px] mx-auto relative">
+      {quizState === 'welcome' && (
+        <WelcomeScreen key="welcome" onStart={handleStart} />
+      )}
+
+      {quizState === 'quiz' && (
+        <>
+          {/* Header */}
+          <div className="bg-[#f2f2f7] sticky top-0 z-10">
+            {/* Progress Bar Section */}
+            <div className="h-[44px] relative flex items-center justify-center px-4">
               <button
                 onClick={handleBack}
-                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                className="absolute left-4 bg-white rounded-full w-[34px] h-[34px] flex items-center justify-center"
               >
-                <ChevronLeft className="w-6 h-6" />
+                <ChevronLeft className="w-5 h-5" />
               </button>
-            )}
-            {quizState === 'welcome' && <div />}
-            {quizState === 'results' && <div />}
-            
-            <div className="text-sm text-gray-600">Blood Sugar Awareness Quiz</div>
-            <div className="w-10" /> {/* Spacer for alignment */}
+              <div className="flex items-center justify-center">
+                <ProgressBar
+                  current={currentQuestionIndex + 1}
+                  total={quizQuestions.length}
+                />
+              </div>
+            </div>
+
+            {/* Question Headline */}
+            <div className="px-6 py-3">
+              <h1 className="text-[32px] font-semibold leading-[120%] tracking-[0.4px] text-black mb-4">
+                {getQuestionParts(currentQuestion.question, currentQuestion.id).main}{' '}
+                <span className="text-[#0a84ff]">
+                  {getQuestionParts(currentQuestion.question, currentQuestion.id).highlight}
+                </span>
+              </h1>
+              <p className="text-[17px] font-medium leading-[22px] tracking-[-0.43px] text-[rgba(60,60,67,0.6)]">
+                Choose what speaks to you most.
+                <br />
+                No wrong answers here.
+              </p>
+            </div>
           </div>
 
-          {quizState === 'quiz' && (
-            <div className="mt-4">
-              <ProgressBar
-                current={currentQuestionIndex + 1}
-                total={quizQuestions.length}
+          {/* Question Content */}
+          <div className="flex-1 pb-48">
+            <AnimatePresence mode="wait">
+              <QuizQuestion
+                key={currentQuestion.id}
+                question={currentQuestion.question}
+                options={currentQuestion.options}
+                selectedOption={selectedOption}
+                onSelectOption={handleSelectOption}
+                questionNumber={currentQuestionIndex + 1}
+                totalQuestions={quizQuestions.length}
+                isMultiSelect={currentQuestion.isMultiSelect}
               />
-            </div>
-          )}
-        </div>
-      </div>
+            </AnimatePresence>
+          </div>
 
-      {/* Main Content */}
-      <div className="flex-1 flex items-center justify-center py-8">
-        <AnimatePresence mode="wait">
-          {quizState === 'welcome' && (
-            <WelcomeScreen key="welcome" onStart={handleStart} />
-          )}
-
-          {quizState === 'quiz' && (
-            <QuizQuestion
-              key={currentQuestion.id}
-              question={currentQuestion.question}
-              options={currentQuestion.options}
-              selectedOption={selectedOption}
-              onSelectOption={handleSelectOption}
-              questionNumber={currentQuestionIndex + 1}
-              totalQuestions={quizQuestions.length}
-            />
-          )}
-
-          {quizState === 'results' && (
-            <ResultsScreen
-              key="results"
-              score={calculateScore()}
-              totalQuestions={quizQuestions.length}
-              onRestart={handleRestart}
-            />
-          )}
-        </AnimatePresence>
-      </div>
-
-      {/* Footer Navigation */}
-      {quizState === 'quiz' && (
-        <div className="bg-white border-t border-gray-200 sticky bottom-0">
-          <div className="max-w-4xl mx-auto px-4 py-4">
+          {/* Bottom Button Section */}
+          <div className="fixed bottom-0 left-0 right-0 max-w-[430px] mx-auto bg-[#f2f2f7] pb-8 pt-4 px-6">
             <button
               onClick={handleNext}
               disabled={!hasSelection()}
-              className={`w-full py-4 rounded-full transition-colors ${
+              className={`w-full py-4 rounded-[20px] transition-colors text-[17px] font-medium leading-[22px] tracking-[-0.43px] ${
                 hasSelection()
-                  ? 'bg-blue-500 text-white hover:bg-blue-600'
-                  : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                  ? 'bg-[#f14e58] text-white'
+                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
               }`}
             >
-              {currentQuestionIndex < quizQuestions.length - 1 ? 'Next Question' : 'Finish Quiz'}
+              Next
             </button>
           </div>
-        </div>
+        </>
+      )}
+
+      {quizState === 'intermediate' && (
+        <IntermediateScreen
+          key="intermediate"
+          onContinue={() => {
+            setQuizState('weekly-pattern');
+          }}
+          onBack={handleIntermediateBack}
+        />
+      )}
+
+      {quizState === 'weekly-pattern' && (
+        <WeeklyPatternQuestion
+          key="weekly-pattern"
+          onContinue={() => {
+            setQuizState('weekly-feedback');
+          }}
+          onBack={() => {
+            setQuizState('intermediate');
+          }}
+          onAnswer={setWeeklyPatternAnswers}
+        />
+      )}
+
+      {quizState === 'weekly-feedback' && weeklyPatternAnswers && (
+        <WeeklyFeedbackScreen
+          key="weekly-feedback"
+          onContinue={() => {
+            setQuizState('first-30-days');
+          }}
+          onBack={() => {
+            setQuizState('weekly-pattern');
+          }}
+          frequency={weeklyPatternAnswers.frequency}
+          portionSize={weeklyPatternAnswers.portion}
+        />
+      )}
+
+      {quizState === 'first-30-days' && (
+        <First30DaysScreen
+          key="first-30-days"
+          onContinue={() => {
+            setQuizState('quiz');
+            setCurrentQuestionIndex(6);
+            setSelectedOption(quizQuestions[6].isMultiSelect ? [] : null);
+          }}
+          onBack={() => {
+            setQuizState('weekly-feedback');
+          }}
+        />
+      )}
+
+      {quizState === 'personal-info' && (
+        <PersonalInfoScreen
+          key="personal-info"
+          onContinue={(data) => {
+            setPersonalInfo(data);
+            setQuizState('loading');
+          }}
+          onBack={() => {
+            setQuizState('quiz');
+            setCurrentQuestionIndex(quizQuestions.length - 1);
+            const prevAnswer = answers[quizQuestions[quizQuestions.length - 1].id];
+            setSelectedOption(prevAnswer || (quizQuestions[quizQuestions.length - 1].isMultiSelect ? [] : null));
+          }}
+          initialData={personalInfo || undefined}
+        />
+      )}
+
+      {quizState === 'loading' && (
+        <LoadingScreen
+          key="loading"
+          onComplete={() => {
+            setQuizState('analysis-complete');
+          }}
+        />
+      )}
+
+      {quizState === 'analysis-complete' && (
+        <AnalysisCompleteScreen
+          key="analysis-complete"
+          onContinue={() => {
+            setQuizState('goals');
+          }}
+          answers={answers}
+        />
+      )}
+
+      {quizState === 'goals' && (
+        <GoalsScreen
+          key="goals"
+          onContinue={(goals) => {
+            setSelectedGoals(goals);
+            setQuizState('current-balance');
+          }}
+          onBack={() => {
+            setQuizState('analysis-complete');
+          }}
+          initialGoals={selectedGoals}
+        />
+      )}
+
+      {quizState === 'current-balance' && (
+        <CurrentBalanceScreen
+          key="current-balance"
+          onContinue={() => {
+            setQuizState('potential-balance');
+          }}
+          onBack={() => {
+            setQuizState('goals');
+          }}
+          answers={answers}
+        />
+      )}
+
+      {quizState === 'potential-balance' && (
+        <PotentialBalanceScreen
+          key="potential-balance"
+          onContinue={() => {
+            setQuizState('greeting-loading');
+          }}
+          onBack={() => {
+            setQuizState('current-balance');
+          }}
+          answers={answers}
+        />
+      )}
+
+      {quizState === 'greeting-loading' && personalInfo && (
+        <GreetingLoadingScreen
+          key="greeting-loading"
+          onComplete={() => {
+            setQuizState('plan-built');
+          }}
+          firstName={personalInfo.firstName}
+        />
+      )}
+
+      {quizState === 'plan-built' && personalInfo && (
+        <PlanBuiltScreen
+          key="plan-built"
+          onComplete={() => {
+            setQuizState('paywall');
+          }}
+          firstName={personalInfo.firstName}
+        />
+      )}
+
+      {quizState === 'paywall' && (
+        <PaywallScreen
+          key="paywall"
+          onClose={handleRestart}
+          onStartTrial={handleRestart}
+        />
       )}
     </div>
   );
