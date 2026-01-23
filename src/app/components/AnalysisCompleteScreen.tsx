@@ -1,4 +1,5 @@
 import { motion } from 'motion/react';
+import { Lightbulb } from 'lucide-react';
 
 interface AnalysisCompleteScreenProps {
   onContinue: () => void;
@@ -99,49 +100,48 @@ export function AnalysisCompleteScreen({ onContinue, answers }: AnalysisComplete
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      transition={{ duration: 0.3 }}
-      className="min-h-screen bg-[#f2f2f7] flex flex-col px-6 py-12"
+      transition={{ duration: 0.15 }}
+      className="min-h-screen bg-gradient-to-b from-[#f2f2f7] to-[#90C7FE] flex flex-col"
     >
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col px-6 py-12 pb-32">
         {/* Title Section */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 5 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2, duration: 0.6 }}
+          transition={{ delay: 0.05, duration: 0.2 }}
           className="text-center mb-8"
         >
-          <h1 className="text-[32px] font-semibold leading-[120%] tracking-[0.4px] text-black mb-4">
-            Analysis complete{' '}
-            <span className="text-[#0a84ff]">✅</span>
+          <h1 className="text-[28px] font-semibold leading-[120%] tracking-[0.4px] text-black mb-4">
+            Reach your goal<br /><span className="text-[#0a84ff]">2x faster</span>
           </h1>
-          <p className="text-[17px] font-medium leading-[22px] tracking-[-0.43px] text-[rgba(60,60,67,0.6)]">
-            Here's what your responses suggest about your blood sugar stability
+          <p className="text-[16px] font-medium leading-[22px] tracking-[-0.43px] text-[rgba(60,60,67,0.6)] font-bold font-normal">
+            These blood sugar stability results were used to build your personalized plan
           </p>
         </motion.div>
 
         {/* Main Score Card */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
+          initial={{ opacity: 0, scale: 0.98 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.4, duration: 0.6 }}
-          className="bg-white rounded-[24px] p-6 mb-6"
+          transition={{ delay: 0.1, duration: 0.2 }}
+          className="bg-white rounded-[40px] mb-6 pt-[24px] pr-[24px] pb-[0px] pl-[24px]"
         >
           {/* Score Header */}
-          <div className="text-center mb-6">
-            <p className="text-[15px] font-medium leading-[20px] tracking-[-0.24px] text-[rgba(60,60,67,0.6)] mb-2">
+          <div className="mb-4">
+            <p className="text-[20px] font-semibold leading-[28px] tracking-[-0.26px] text-black mb-3">
               Blood Sugar Stability Score
             </p>
-            <div className="text-[48px] font-semibold leading-[120%] tracking-[0.4px] text-[#0a84ff]">
+            <div className="text-[48px] font-semibold leading-[120%] tracking-[0.4px] text-[rgb(241,78,88)]">
               {score}
-              <span className="text-[24px] text-[rgba(60,60,67,0.6)]"> / 100</span>
+              <span className="text-[24px] text-[rgba(158,158,179,0.6)]"> / 100</span>
             </div>
           </div>
 
           {/* Bar Chart Visualization */}
           <div className="relative mb-6">
             {/* Safety Line */}
-            <div className="absolute top-[20%] left-0 right-0 border-t-2 border-dashed border-[rgba(60,60,67,0.2)] z-10">
-              <span className="absolute right-0 -top-5 text-[12px] font-medium text-[rgba(60,60,67,0.4)]">
+            <div className="absolute top-[20%] left-0 right-0 border-t-2 border-dashed border-[rgba(60,60,67,0.2)] z-10 text-[rgb(158,158,179)]">
+              <span className="absolute right-0 -top-5 text-[12px] font-medium text-[rgba(158,158,179,0.7)]">
                 Stability zone
               </span>
             </div>
@@ -153,12 +153,12 @@ export function AnalysisCompleteScreen({ onContinue, answers }: AnalysisComplete
                 <motion.div
                   initial={{ height: 0 }}
                   animate={{ height: `${(score / 100) * 160}px` }}
-                  transition={{ delay: 0.8, duration: 1, ease: "easeOut" }}
-                  className="w-[80px] bg-gradient-to-b from-[#f14e58] to-[#ff6b6b] rounded-t-[16px] relative flex items-start justify-center pt-3"
+                  transition={{ delay: 0.2, duration: 0.4, ease: "easeOut" }}
+                  className="w-[80px] bg-gradient-to-b from-[#f14e58] to-[#ff6b6b] rounded-[16px] relative flex items-start justify-center pt-3"
                 >
-                  <span className="text-white font-semibold text-[16px]">{score}%</span>
+                  <span className="text-white font-semibold text-[16px]">{score}</span>
                 </motion.div>
-                <span className="text-[13px] font-medium text-[rgba(60,60,67,0.6)]">Your Score</span>
+                <span className="text-[13px] font-medium text-[rgb(158,158,179)]">Your Score</span>
               </div>
 
               {/* Average Score Bar */}
@@ -166,42 +166,27 @@ export function AnalysisCompleteScreen({ onContinue, answers }: AnalysisComplete
                 <motion.div
                   initial={{ height: 0 }}
                   animate={{ height: `${(averageScore / 100) * 160}px` }}
-                  transition={{ delay: 1, duration: 1, ease: "easeOut" }}
-                  className="w-[80px] bg-gradient-to-b from-[#34c759] to-[#30d158] rounded-t-[16px] relative flex items-start justify-center pt-3"
+                  transition={{ delay: 0.3, duration: 0.4, ease: "easeOut" }}
+                  className="w-[80px] bg-gradient-to-b from-[#0a84ff] to-[#0a84ff] rounded-[16px] relative flex items-start justify-center pt-3"
                 >
-                  <span className="text-white font-semibold text-[16px]">{averageScore}%</span>
+                  <span className="text-white font-semibold text-[16px]">{averageScore}</span>
                 </motion.div>
-                <span className="text-[13px] font-medium text-[rgba(60,60,67,0.6)]">Average Score</span>
+                <span className="text-[13px] font-medium text-[rgb(158,158,179)]">Average Score</span>
               </div>
-            </div>
-          </div>
-
-          {/* Comparison Labels */}
-          <div className="flex justify-between items-center mb-4 px-4">
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full bg-gradient-to-b from-[#f14e58] to-[#ff6b6b]"></div>
-              <span className="text-[14px] font-medium text-[rgba(60,60,67,0.8)]">
-                Your score: {score}
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full bg-gradient-to-b from-[#34c759] to-[#30d158]"></div>
-              <span className="text-[14px] font-medium text-[rgba(60,60,67,0.8)]">
-                Average: {averageScore}
-              </span>
             </div>
           </div>
         </motion.div>
 
         {/* Insight Card */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 5 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.2, duration: 0.6 }}
-          className="bg-white rounded-[24px] p-6 mb-4"
+          transition={{ delay: 0.4, duration: 0.2 }}
+          className="bg-white rounded-[40px] p-6 mb-4"
         >
           <div className="mb-3">
-            <span className="inline-block px-3 py-1 bg-[#0a84ff]/10 text-[#0a84ff] rounded-full text-[13px] font-medium">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-[#0a84ff]/10 text-[#0a84ff] rounded-full text-[13px] font-medium">
+              <Lightbulb className="w-3.5 h-3.5" />
               {getStabilityZoneLabel()}
             </span>
           </div>
@@ -222,7 +207,7 @@ export function AnalysisCompleteScreen({ onContinue, answers }: AnalysisComplete
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 1.4, duration: 0.6 }}
+          transition={{ delay: 0.5, duration: 0.2 }}
           className="text-center mb-6 px-4"
         >
           <p className="text-[12px] leading-[16px] tracking-[-0.08px] text-[rgba(60,60,67,0.5)]">
@@ -232,18 +217,18 @@ export function AnalysisCompleteScreen({ onContinue, answers }: AnalysisComplete
         </motion.div>
       </div>
 
-      {/* CTA Button */}
+      {/* Fixed CTA Button */}
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 5 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 1.6, duration: 0.6 }}
-        className="pb-8"
+        transition={{ delay: 0.6, duration: 0.2 }}
+        className="fixed bottom-0 left-0 right-0 max-w-[430px] mx-auto bg-gradient-to-b from-transparent to-[#90C7FE] pb-3 pt-4 px-6"
       >
         <button
           onClick={onContinue}
           className="w-full py-4 rounded-[20px] bg-[#f14e58] text-white text-[17px] font-medium leading-[22px] tracking-[-0.43px]"
         >
-          Check your signals
+          Got it! Show more insights
         </button>
       </motion.div>
     </motion.div>

@@ -11,11 +11,11 @@ interface WelcomeScreenProps {
 
 export function WelcomeScreen({ onStart }: WelcomeScreenProps) {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#f2f2f7] via-[#adc9e6] to-[#0a84ff] flex flex-col relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-b from-[#f2f2f7] to-[#0a84ff] flex flex-col relative overflow-hidden">
       {/* Background Illustration */}
       <div className="absolute inset-0 pointer-events-none">
         {/* Image Cards */}
-        <div className="absolute flex h-[225.337px] items-center justify-center left-[42.5px] top-[70.74px] w-[192.147px]">
+        <div className="absolute flex h-[225.337px] items-center justify-center left-[42.5px] top-[30px] w-[192.147px]">
           <div className="flex-none rotate-[356.156deg]">
             <div className="h-[213.869px] pointer-events-none relative rounded-[28.516px] w-[178.224px]">
               <div className="absolute inset-0 overflow-hidden rounded-[28.516px]">
@@ -25,7 +25,7 @@ export function WelcomeScreen({ onStart }: WelcomeScreenProps) {
             </div>
           </div>
         </div>
-        <div className="absolute flex h-[240.964px] items-center justify-center left-[170.83px] top-[64px] w-[188.669px]">
+        <div className="absolute flex h-[240.964px] items-center justify-center left-[170.83px] top-[24px] w-[188.669px]">
           <div className="flex-none rotate-[3.122deg] skew-x-[0.032deg]">
             <div className="h-[231.692px] pointer-events-none relative rounded-[28.516px] w-[176.442px]">
               <div aria-hidden="true" className="absolute inset-0 rounded-[28.516px]">
@@ -44,7 +44,7 @@ export function WelcomeScreen({ onStart }: WelcomeScreenProps) {
             </div>
           </div>
         </div>
-        <div className="absolute bg-black blur-[26.734px] h-[129.213px] left-[170.34px] top-[117.46px] w-[30.298px]" />
+        <div className="absolute bg-black blur-[26.734px] h-[129.213px] left-[170.34px] top-[77.46px] w-[30.298px]" />
       </div>
 
       {/* Review Card */}
@@ -52,7 +52,7 @@ export function WelcomeScreen({ onStart }: WelcomeScreenProps) {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2, duration: 0.6 }}
-        className="absolute left-1/2 top-[268px] translate-x-[-50%] flex h-[185.771px] items-center justify-center w-[335.373px]"
+        className="absolute left-1/2 top-[210px] translate-x-[-50%] flex h-[185.771px] items-center justify-center w-[335.373px]"
       >
         <div className="flex-none rotate-[357.549deg]">
           <div className="w-[328.323px]">
@@ -93,17 +93,17 @@ export function WelcomeScreen({ onStart }: WelcomeScreenProps) {
         </div>
       </motion.div>
 
-      {/* Content Section */}
-      <div className="absolute bottom-0 left-0 w-full flex flex-col gap-[12px] px-6 pb-2">
+      {/* Content Section - Fixed Bottom */}
+      <div className="fixed bottom-0 left-0 right-0 max-w-[430px] mx-auto w-full flex flex-col gap-[12px] px-6 pb-2 bg-gradient-to-b from-transparent via-[#0a84ff] to-[#0a84ff] pt-8">
         {/* Title and Chips */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4, duration: 0.6 }}
-          className="flex flex-col gap-[24px] items-center mb-8"
+          className="flex flex-col gap-[16px] items-center"
         >
           {/* Title */}
-          <h1 className="text-[32px] font-semibold leading-[120%] tracking-[0.4px] text-white text-center">
+          <h1 className="text-[28px] font-semibold leading-[120%] tracking-[0.4px] text-white text-center">
             Eat smarter. Feel better. Lose weight your way.
           </h1>
 
@@ -184,17 +184,17 @@ export function WelcomeScreen({ onStart }: WelcomeScreenProps) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.7, duration: 0.6 }}
-          className="flex items-center justify-center gap-2 py-2"
+          className="flex items-center justify-center gap-2 py-1.5"
         >
           {/* 5 Stars */}
           <div className="flex gap-0.5">
             {[...Array(5)].map((_, index) => (
-              <svg key={index} width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <svg key={index} width="20" height="20" viewBox="0 0 24 24" fill="none">
                 <path
                   d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"
-                  fill="#FF9500"
-                  stroke="#FF9500"
-                  strokeWidth="1"
+                  fill="#FFC107"
+                  stroke="#FFC107"
+                  strokeWidth="0.5"
                   strokeLinecap="round"
                   strokeLinejoin="round"
                 />
@@ -202,7 +202,7 @@ export function WelcomeScreen({ onStart }: WelcomeScreenProps) {
             ))}
           </div>
           {/* Satisfaction Text */}
-          <p className="text-[17px] font-semibold leading-[22px] tracking-[-0.43px] text-black">
+          <p className="text-[15px] font-semibold leading-[22px] tracking-[-0.43px] text-white">
             98% Satisfaction
           </p>
         </motion.div>
@@ -212,28 +212,23 @@ export function WelcomeScreen({ onStart }: WelcomeScreenProps) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.8, duration: 0.6 }}
-          className="flex flex-col items-center pb-[4px]"
+          className="flex flex-col items-center pb-2"
         >
-          <p className="text-[15px] font-normal leading-[20px] tracking-[-0.23px] text-center text-white">
+          <p className="text-[13px] font-normal leading-[18px] tracking-[-0.23px] text-center text-white">
             By proceeding, you acknowledge and agree
           </p>
-          <div className="flex gap-[8px] items-center">
-            <button className="text-[15px] font-normal leading-[20px] tracking-[-0.23px] text-white underline">
+          <div className="flex gap-[6px] items-center">
+            <button className="text-[13px] font-normal leading-[18px] tracking-[-0.23px] text-white underline">
               Terms of Use
             </button>
-            <p className="text-[15px] font-normal leading-[20px] tracking-[-0.23px] text-white">
+            <p className="text-[13px] font-normal leading-[18px] tracking-[-0.23px] text-white">
               and
             </p>
-            <button className="text-[15px] font-normal leading-[20px] tracking-[-0.23px] text-white underline">
+            <button className="text-[13px] font-normal leading-[18px] tracking-[-0.23px] text-white underline">
               Privacy Policy
             </button>
           </div>
         </motion.div>
-
-        {/* Home Indicator Spacer */}
-        <div className="h-[34px] opacity-0">
-          <div className="bg-white bottom-[8px] h-[5px] mx-auto rounded-[100px] w-[134px]" />
-        </div>
       </div>
     </div>
   );

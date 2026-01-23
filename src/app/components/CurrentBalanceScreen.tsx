@@ -1,5 +1,6 @@
 import { motion } from 'motion/react';
 import { ChevronLeft } from 'lucide-react';
+import { useRef, useEffect } from 'react';
 
 interface CurrentBalanceScreenProps {
   onContinue: () => void;
@@ -8,6 +9,15 @@ interface CurrentBalanceScreenProps {
 }
 
 export function CurrentBalanceScreen({ onContinue, onBack, answers }: CurrentBalanceScreenProps) {
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    // Scroll to top when component mounts
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTop = 0;
+    }
+  }, []);
+
   // Calculate scores based on answers
   const calculateScores = () => {
     let energyStability = 50;
@@ -168,48 +178,47 @@ export function CurrentBalanceScreen({ onContinue, onBack, answers }: CurrentBal
   const scores = calculateScores();
 
   const scoreCards = [
-    { label: 'Overall', value: scores.overall, isMain: true },
-    { label: 'Energy stability', value: scores.energyStability, isMain: false },
-    { label: 'Appetite control', value: scores.appetiteControl, isMain: false },
-    { label: 'Motivation', value: scores.motivation, isMain: false },
-    { label: 'Mental clarity', value: scores.mentalClarity, isMain: false },
-    { label: 'Consistency', value: scores.consistency, isMain: false },
+    { emoji: '⭐', label: 'Overall metabolic health', value: scores.overall, isMain: true },
+    { emoji: '⚡', label: 'Energy', value: scores.energyStability, isMain: false },
+    { emoji: '🎯', label: 'Appetite', value: scores.appetiteControl, isMain: false },
+    { emoji: '💪', label: 'Motivation', value: scores.motivation, isMain: false },
+    { emoji: '🧠', label: 'Mental clarity', value: scores.mentalClarity, isMain: false },
+    { emoji: '📅', label: 'Consistency', value: scores.consistency, isMain: false },
   ];
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.3 }}
-      className="min-h-screen bg-[#f2f2f7] flex flex-col"
-    >
-      {/* Header */}
-      <div className="bg-[#f2f2f7] sticky top-0 z-10">
-        {/* Back Button Section */}
-        <div className="h-[44px] relative flex items-center justify-center px-4">
+    <div className="fixed inset-0 bg-[#f2f2f7] flex flex-col">
+      {/* Fixed Header */}
+      <div className="flex-shrink-0 px-4 pt-[0px] pr-[16px] pb-[0px] pl-[4px]">
+        <div className="h-[44px] relative flex items-center justify-center">
           <button
             onClick={onBack}
-            className="absolute left-4 bg-white rounded-full w-[34px] h-[34px] flex items-center justify-center"
+            className="absolute left-4 bg-white rounded-full w-[34px] h-[34px] flex items-center justify-center active:scale-95 transition-transform"
           >
             <ChevronLeft className="w-5 h-5" />
           </button>
         </div>
-
-        {/* Title Section */}
-        <div className="px-6 py-3 mb-4">
-          <h1 className="text-[32px] font-semibold leading-[120%] tracking-[0.4px] text-black mb-4">
-            Your current{' '}
-            <span className="text-[#0a84ff]">blood sugar balance</span>
-          </h1>
-          <p className="text-[17px] font-medium leading-[22px] tracking-[-0.43px] text-[rgba(60,60,67,0.6)]">
-            Based on your responses, here's where you stand today
-          </p>
-        </div>
       </div>
 
-      {/* Score Cards */}
-      <div className="flex-1 px-6 pb-32">
+      {/* Scrollable Content */}
+      <div ref={scrollContainerRef} className="flex-1 overflow-y-auto px-6 pb-24">
+        {/* Title Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          className="pt-2 pb-6"
+        >
+          <h1 className="text-[28px] font-semibold leading-[120%] tracking-[0.4px] text-black mb-4 text-center">
+            Your current{' '}
+            <span className="text-[#0a84ff]">health profile</span>
+          </h1>
+          <p className="text-[16px] font-normal leading-[22px] tracking-[-0.43px] text-[rgba(60,60,67,0.6)] text-center">
+            Based on your responses, here's how you're doing today
+          </p>
+        </motion.div>
+
+        {/* Score Cards */}
         <div className="grid grid-cols-2 gap-3">
           {scoreCards.map((card, index) => (
             <motion.div
@@ -217,23 +226,30 @@ export function CurrentBalanceScreen({ onContinue, onBack, answers }: CurrentBal
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: index * 0.08, duration: 0.4 }}
-              className={`rounded-[20px] p-5 ${
+              className={`rounded-[32px] p-5 ${
                 card.isMain
-                  ? 'col-span-2 bg-gradient-to-br from-[#0a84ff] to-[#0066cc]'
+                  ? 'col-span-2 bg-gradient-to-br from-[#0a84ff] via-[#0066ff] to-[#0052cc]'
                   : 'bg-white'
               }`}
             >
               <div className="text-center">
-                <p
-                  className={`text-[13px] font-medium leading-[18px] tracking-[-0.08px] mb-2 ${
-                    card.isMain ? 'text-white/80' : 'text-[rgba(60,60,67,0.6)]'
+                {/* Label with emoji */}
+                <div className="flex items-center justify-center gap-2 mb-2">
+                  <span className="text-[20px]">{card.emoji}</span>
+                  <p
+                    className={`text-[13px] font-medium leading-[18px] tracking-[-0.08px] ${
+                      card.isMain ? 'text-white/90' : 'text-[rgba(60,60,67,0.6)]'
+                    }`}
+                  >
+                    {card.label}
+                  </p>
+                </div>
+
+                <div
+                  className={`text-[40px] font-semibold leading-[120%] tracking-[0.4px] ${
+                    card.isMain ? 'text-white' : 'text-black'
                   }`}
                 >
-                  {card.label}
-                </p>
-                <div className={`text-[40px] font-semibold leading-[120%] tracking-[0.4px] ${
-                  card.isMain ? 'text-white' : 'text-black'
-                }`}>
                   {card.value}
                 </div>
                 <p
@@ -277,7 +293,7 @@ export function CurrentBalanceScreen({ onContinue, onBack, answers }: CurrentBal
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.8, duration: 0.5 }}
-          className="mt-6 bg-white rounded-[20px] p-5"
+          className="mt-6 bg-white rounded-[32px] p-5"
         >
           <div className="flex items-start gap-3">
             <div className="text-[24px] flex-shrink-0">💡</div>
@@ -294,15 +310,15 @@ export function CurrentBalanceScreen({ onContinue, onBack, answers }: CurrentBal
         </motion.div>
       </div>
 
-      {/* Bottom Button Section */}
-      <div className="fixed bottom-0 left-0 right-0 max-w-[430px] mx-auto bg-[#f2f2f7] pb-8 pt-4 px-6">
+      {/* Fixed Bottom Button */}
+      <div className="absolute bottom-0 left-0 right-0 bg-[#f2f2f7] pb-6 pt-4 px-6">
         <button
           onClick={onContinue}
-          className="w-full py-4 rounded-[20px] bg-[#f14e58] text-white text-[17px] font-medium leading-[22px] tracking-[-0.43px]"
+          className="w-full py-4 rounded-[20px] bg-[#f14e58] text-white text-[17px] font-medium leading-[22px] tracking-[-0.43px] active:scale-[0.98] transition-transform"
         >
-          See your potential score
+          See your potential score in 30 days
         </button>
       </div>
-    </motion.div>
+    </div>
   );
 }

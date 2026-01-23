@@ -1,23 +1,25 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, ChevronLeft } from 'lucide-react';
+import { ChevronLeft, X } from 'lucide-react';
 import { ProgressBar } from '@/app/components/ProgressBar';
 
 interface WeeklyPatternQuestionProps {
   onContinue: () => void;
   onBack: () => void;
   onAnswer: (answers: { frequency: string; portion: string }) => void;
+  currentStep: number;
+  totalSteps: number;
 }
 
-export function WeeklyPatternQuestion({ onContinue, onBack, onAnswer }: WeeklyPatternQuestionProps) {
+export function WeeklyPatternQuestion({ onContinue, onBack, onAnswer, currentStep, totalSteps }: WeeklyPatternQuestionProps) {
   const [selectedFrequency, setSelectedFrequency] = useState<string | null>(null);
   const [selectedPortion, setSelectedPortion] = useState<string | null>(null);
   const [showHelperModal, setShowHelperModal] = useState(false);
 
   const frequencyOptions = [
-    { value: 'daily', label: 'Daily' },
-    { value: 'few-days', label: 'Every few days' },
-    { value: 'weekly', label: 'About once a week' },
+    { value: 'daily', label: 'Daily', emoji: '📅' },
+    { value: 'few-days', label: 'Every few days', emoji: '🗓️' },
+    { value: 'weekly', label: 'About once a week', emoji: '📆' },
   ];
 
   const portionOptions = [
@@ -66,7 +68,7 @@ export function WeeklyPatternQuestion({ onContinue, onBack, onAnswer }: WeeklyPa
             <ChevronLeft className="w-5 h-5" />
           </button>
           <div className="flex items-center justify-center">
-            <ProgressBar current={7} total={10} />
+            <ProgressBar current={currentStep} total={totalSteps} />
           </div>
         </div>
       </div>
@@ -74,13 +76,9 @@ export function WeeklyPatternQuestion({ onContinue, onBack, onAnswer }: WeeklyPa
       {/* Content */}
       <div className="flex-1 overflow-y-auto px-6 pb-6">
         <div className="mb-8 mt-3">
-          <h1 className="text-[32px] font-semibold leading-[120%] tracking-[0.4px] text-black mb-4">
-            What does a typical week look like for you?
+          <h1 className="text-[28px] font-semibold leading-[120%] tracking-[0.4px] text-black text-left">
+            Let's find out<br /><span className="text-[#0a84ff]">your pattern</span>
           </h1>
-          <p className="text-[17px] font-medium leading-[22px] tracking-[-0.43px] text-[rgba(60,60,67,0.6)]">
-            What's your general pattern with high-carb foods?<br />
-            Examples: bread, pasta, rice, sweets, snacks
-          </p>
         </div>
 
         {/* Question 1: Frequency */}
@@ -88,19 +86,24 @@ export function WeeklyPatternQuestion({ onContinue, onBack, onAnswer }: WeeklyPa
           <h2 className="text-[17px] font-semibold leading-[22px] tracking-[-0.43px] text-black mb-4">
             How often do you eat high-carb foods?
           </h2>
-          <div className="space-y-3">
+          <div className="grid grid-cols-3 gap-3">
             {frequencyOptions.map((option) => (
               <motion.button
                 key={option.value}
                 onClick={() => setSelectedFrequency(option.value)}
-                className={`w-full text-left px-5 py-4 rounded-[16px] text-[17px] font-medium leading-[22px] tracking-[-0.43px] transition-all ${
+                className={`flex flex-col items-center justify-center p-4 rounded-[24px] transition-all min-h-[120px] border ${
                   selectedFrequency === option.value
-                    ? 'bg-[#f14e58] text-white'
-                    : 'bg-white text-black'
+                    ? 'bg-[#E8F3FF] border-[#0a84ff]'
+                    : 'bg-white border-transparent'
                 }`}
-                whileTap={{ scale: 0.98 }}
+                whileTap={{ scale: 0.95 }}
               >
-                {option.label}
+                <div className="text-5xl mb-2">{option.emoji}</div>
+                <div className={`text-[15px] font-semibold leading-[20px] tracking-[-0.43px] text-center ${
+                  selectedFrequency === option.value ? 'text-[#0a84ff]' : 'text-black'
+                }`}>
+                  {option.label}
+                </div>
               </motion.button>
             ))}
           </div>
@@ -116,10 +119,10 @@ export function WeeklyPatternQuestion({ onContinue, onBack, onAnswer }: WeeklyPa
               <motion.button
                 key={option.value}
                 onClick={() => setSelectedPortion(option.value)}
-                className={`flex flex-col items-center justify-center p-4 rounded-[24px] transition-all ${
+                className={`flex flex-col items-center justify-center p-4 rounded-[24px] transition-all border ${
                   selectedPortion === option.value
-                    ? 'bg-gradient-to-br from-[#f14e58] to-[#ff6b4a] text-white shadow-lg'
-                    : 'bg-white text-black'
+                    ? 'bg-[#E8F3FF] border-[#0a84ff]'
+                    : 'bg-white border-transparent'
                 }`}
                 whileTap={{ scale: 0.95 }}
                 style={{
@@ -128,13 +131,13 @@ export function WeeklyPatternQuestion({ onContinue, onBack, onAnswer }: WeeklyPa
               >
                 <div className="text-5xl mb-2">{option.emoji}</div>
                 <div className={`text-[17px] font-semibold leading-[22px] tracking-[-0.43px] mb-1 ${
-                  selectedPortion === option.value ? 'text-white' : 'text-black'
+                  selectedPortion === option.value ? 'text-[#0a84ff]' : 'text-black'
                 }`}>
                   {option.label}
                 </div>
                 <div className={`text-[15px] font-medium leading-[20px] tracking-[-0.43px] ${
                   selectedPortion === option.value
-                    ? 'text-white/80'
+                    ? 'text-[#0a84ff]/60'
                     : 'text-[rgba(60,60,67,0.6)]'
                 }`}>
                   {option.calories}
@@ -148,7 +151,7 @@ export function WeeklyPatternQuestion({ onContinue, onBack, onAnswer }: WeeklyPa
         <div className="text-center mb-24">
           <button
             onClick={() => setShowHelperModal(true)}
-            className="text-[#f14e58] text-[17px] font-semibold leading-[22px] tracking-[-0.43px]"
+            className="text-[#0a84ff] text-[17px] font-semibold leading-[22px] tracking-[-0.43px]"
           >
             Why do we ask?
           </button>
@@ -156,7 +159,7 @@ export function WeeklyPatternQuestion({ onContinue, onBack, onAnswer }: WeeklyPa
       </div>
 
       {/* Bottom Button Section */}
-      <div className="fixed bottom-0 left-0 right-0 max-w-[430px] mx-auto bg-[#f2f2f7] pb-8 pt-4 px-6">
+      <div className="fixed bottom-0 left-0 right-0 max-w-[430px] mx-auto bg-[#f2f2f7] pb-3 pt-4 px-6">
         <motion.button
           onClick={handleNext}
           disabled={!hasValidSelection}

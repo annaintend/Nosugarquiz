@@ -1,7 +1,7 @@
 
-  # Create Mobile-First Quiz
+  # Sugar focus
 
-  This is a code bundle for Create Mobile-First Quiz. The original project is available at https://www.figma.com/design/RSKX732AGbiyul5pLQtVnX/Create-Mobile-First-Quiz.
+  This is a code bundle for Sugar focus. The original project is available at https://www.figma.com/design/RSKX732AGbiyul5pLQtVnX/Sugar-focus.
 
   ## Running the code
 

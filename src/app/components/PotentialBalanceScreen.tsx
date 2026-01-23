@@ -1,5 +1,6 @@
 import { motion } from 'motion/react';
 import { ChevronLeft } from 'lucide-react';
+import { useRef, useEffect } from 'react';
 
 interface PotentialBalanceScreenProps {
   onContinue: () => void;
@@ -8,6 +9,15 @@ interface PotentialBalanceScreenProps {
 }
 
 export function PotentialBalanceScreen({ onContinue, onBack, answers }: PotentialBalanceScreenProps) {
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    // Scroll to top when component mounts
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTop = 0;
+    }
+  }, []);
+
   // Calculate current scores (same logic as CurrentBalanceScreen)
   const calculateCurrentScores = () => {
     let energyStability = 50;
@@ -201,21 +211,21 @@ export function PotentialBalanceScreen({ onContinue, onBack, answers }: Potentia
   const scoreCards = [
     { 
       emoji: '⭐', 
-      label: 'Overall', 
+      label: 'Overall metabolic health', 
       current: currentScores.overall,
       potential: potentialScores.overall,
       isMain: true 
     },
     { 
       emoji: '😊', 
-      label: 'Mood stability', 
+      label: 'Mood', 
       current: currentScores.mentalClarity,
       potential: potentialScores.mentalClarity,
       isMain: false 
     },
     { 
       emoji: '🎯', 
-      label: 'Appetite control', 
+      label: 'Appetite', 
       current: currentScores.appetiteControl,
       potential: potentialScores.appetiteControl,
       isMain: false 
@@ -244,39 +254,38 @@ export function PotentialBalanceScreen({ onContinue, onBack, answers }: Potentia
   ];
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.3 }}
-      className="min-h-screen bg-[#f2f2f7] flex flex-col"
-    >
-      {/* Header */}
-      <div className="bg-[#f2f2f7] sticky top-0 z-10">
-        {/* Back Button Section */}
-        <div className="h-[44px] relative flex items-center justify-center px-4">
+    <div className="fixed inset-0 bg-[#f2f2f7] flex flex-col">
+      {/* Fixed Header */}
+      <div className="flex-shrink-0 px-4 pt-[0px] pr-[16px] pb-[0px] pl-[4px]">
+        <div className="h-[44px] relative flex items-center justify-center">
           <button
             onClick={onBack}
-            className="absolute left-4 bg-white rounded-full w-[34px] h-[34px] flex items-center justify-center"
+            className="absolute left-4 bg-white rounded-full w-[34px] h-[34px] flex items-center justify-center active:scale-95 transition-transform"
           >
             <ChevronLeft className="w-5 h-5" />
           </button>
         </div>
-
-        {/* Title Section */}
-        <div className="px-6 py-3 mb-4">
-          <h1 className="text-[32px] font-semibold leading-[120%] tracking-[0.4px] text-black mb-4">
-            Your potential{' '}
-            <span className="text-[#34c759]">blood sugar balance</span>
-          </h1>
-          <p className="text-[17px] font-medium leading-[22px] tracking-[-0.43px] text-[rgba(60,60,67,0.6)]">
-            Here's what typically becomes possible with improved stability
-          </p>
-        </div>
       </div>
 
-      {/* Score Cards */}
-      <div className="flex-1 px-6 pb-32">
+      {/* Scrollable Content */}
+      <div ref={scrollContainerRef} className="flex-1 overflow-y-auto px-6 pb-24">
+        {/* Title Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          className="pt-2 pb-6"
+        >
+          <h1 className="text-[28px] font-semibold leading-[120%] tracking-[0.4px] text-black mb-4 text-center">
+            Your health profile{' '}
+            <span className="text-[#34c759]">in 30 days</span>
+          </h1>
+          <p className="text-[16px] font-normal leading-[22px] tracking-[-0.43px] text-[rgba(60,60,67,0.6)] text-center">
+            New year, new you! Let's make that glow up!
+          </p>
+        </motion.div>
+
+        {/* Score Cards */}
         <div className="grid grid-cols-2 gap-3">
           {scoreCards.map((card, index) => {
             const improvement = card.potential - card.current;
@@ -287,7 +296,7 @@ export function PotentialBalanceScreen({ onContinue, onBack, answers }: Potentia
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: index * 0.08, duration: 0.4 }}
-                className={`rounded-[20px] p-5 ${
+                className={`rounded-[32px] p-5 ${
                   card.isMain
                     ? 'col-span-2 bg-gradient-to-br from-[#34c759] to-[#30d158]'
                     : 'bg-white'
@@ -375,15 +384,15 @@ export function PotentialBalanceScreen({ onContinue, onBack, answers }: Potentia
         </motion.div>
       </div>
 
-      {/* Bottom Button Section */}
-      <div className="fixed bottom-0 left-0 right-0 max-w-[430px] mx-auto bg-[#f2f2f7] pb-8 pt-4 px-6">
+      {/* Fixed Bottom Button */}
+      <div className="absolute bottom-0 left-0 right-0 bg-[#f2f2f7] pb-6 pt-4 px-6">
         <button
           onClick={onContinue}
-          className="w-full py-4 rounded-[20px] bg-[#f14e58] text-white text-[17px] font-medium leading-[22px] tracking-[-0.43px]"
+          className="w-full py-4 rounded-[20px] bg-[#f14e58] text-white text-[17px] font-medium leading-[22px] tracking-[-0.43px] active:scale-[0.98] transition-transform"
         >
-          See how I'll improve
+          Let's do this!
         </button>
       </div>
-    </motion.div>
+    </div>
   );
 }

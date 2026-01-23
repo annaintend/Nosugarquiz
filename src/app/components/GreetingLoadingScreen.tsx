@@ -21,7 +21,7 @@ export function GreetingLoadingScreen({ onComplete, firstName }: GreetingLoading
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.3 }}
-      className="min-h-screen bg-[#f2f2f7] flex flex-col items-center justify-center px-6"
+      className="min-h-screen bg-gradient-to-b from-[#f2f2f7] to-[#90C7FE] flex flex-col items-center justify-center px-6"
     >
       {/* Greeting */}
       <motion.div
@@ -30,7 +30,7 @@ export function GreetingLoadingScreen({ onComplete, firstName }: GreetingLoading
         transition={{ delay: 0.3, duration: 0.6 }}
         className="text-center mb-auto mt-auto"
       >
-        <h1 className="text-[32px] font-semibold leading-[120%] tracking-[0.4px] text-black">
+        <h1 className="text-[24px] font-semibold leading-[120%] tracking-[0.4px] text-black">
           Hey, {firstName}.
         </h1>
       </motion.div>

@@ -1,13 +1,14 @@
 import { useState } from 'react';
-import { AnimatePresence } from 'motion/react';
+import { AnimatePresence, motion } from 'motion/react';
 import { WelcomeScreen } from '@/app/components/WelcomeScreen';
-import { QuizQuestion } from '@/app/components/QuizQuestion';
+import { QuizQuestion, getSupportTitle } from '@/app/components/QuizQuestion';
 import { PaywallScreen } from '@/app/components/PaywallScreen';
 import { IntermediateScreen } from '@/app/components/IntermediateScreen';
 import { WeeklyPatternQuestion } from '@/app/components/WeeklyPatternQuestion';
 import { WeeklyFeedbackScreen } from '@/app/components/WeeklyFeedbackScreen';
 import { First30DaysScreen } from '@/app/components/First30DaysScreen';
 import { PersonalInfoScreen } from '@/app/components/PersonalInfoScreen';
+import { AgeScreen } from '@/app/components/AgeScreen';
 import { LoadingScreen } from '@/app/components/LoadingScreen';
 import { AnalysisCompleteScreen } from '@/app/components/AnalysisCompleteScreen';
 import { GoalsScreen } from '@/app/components/GoalsScreen';
@@ -32,7 +33,7 @@ interface Question {
 const quizQuestions: Question[] = [
   {
     id: 1,
-    question: 'How do you currently see yourself in relation to food and blood sugar?',
+    question: 'How do you currently see yourself in relation to food, blood sugar?',
     options: [
       {
         value: 'out-of-control',
@@ -55,7 +56,7 @@ const quizQuestions: Question[] = [
         supportText: "Awareness and feedback matter more than stricter rules.",
       },
     ],
-    isMultiSelect: false,
+    isMultiSelect: true,
   },
   {
     id: 2,
@@ -68,7 +69,7 @@ const quizQuestions: Question[] = [
       },
       {
         value: 'inconsistent',
-        label: 'I feel fine sometimes, but terrible other times — with no clear reason',
+        label: 'I feel fine sometimes, but terrible other times',
         supportText: "This inconsistency is often a sign of blood sugar spikes and crashes, not lack of discipline.",
       },
       {
@@ -87,7 +88,7 @@ const quizQuestions: Question[] = [
   {
     id: 3,
     question: "How do you typically handle social situations with sugary foods?",
-    isMultiSelect: false,
+    isMultiSelect: true,
     options: [
       {
         value: 'eat-without-knowing',
@@ -136,7 +137,7 @@ const quizQuestions: Question[] = [
         supportText: "Awareness changes everything. Knowing your limits removes anxiety from food choices.",
       },
     ],
-    isMultiSelect: false,
+    isMultiSelect: true,
   },
   {
     id: 5,
@@ -198,24 +199,24 @@ const quizQuestions: Question[] = [
     isMultiSelect: true,
     options: [
       {
-        value: 'energy-crashes',
-        label: 'Sudden energy crashes',
-        supportText: "These often come from delayed glucose drops after meals."
+        value: 'brain-fog',
+        label: 'Brain fog or difficulty concentrating',
+        supportText: "Mental clarity is often the first casualty of unstable glucose levels."
       },
       {
-        value: 'strong-cravings',
-        label: 'Strong cravings that feel out of proportion',
-        supportText: "Cravings are frequently a physiological response, not a lack of control."
+        value: 'fatigue-sleepiness',
+        label: 'Fatigue or sleepiness after meals',
+        supportText: "Post-meal crashes are a telltale sign of glucose spikes followed by rapid drops."
       },
       {
-        value: 'mood-swings',
-        label: 'Mood swings or irritability',
-        supportText: "Blood sugar fluctuations can directly affect emotional regulation."
+        value: 'headaches',
+        label: 'Frequent headaches',
+        supportText: "Blood sugar fluctuations can trigger tension and migraine-type headaches."
       },
       {
-        value: 'planning-around-food',
-        label: 'Planning my day around food and energy',
-        supportText: "Unpredictability forces constant mental effort around eating."
+        value: 'jittery-shaky',
+        label: 'Feeling jittery or shaky',
+        supportText: "This trembling sensation often signals reactive hypoglycemia from glucose crashes."
       }
     ]
   },
@@ -302,7 +303,7 @@ const quizQuestions: Question[] = [
   },
   {
     id: 11,
-    question: "What kind of support would make the biggest difference for you?",
+    question: "What kind of support would make the <span class='text-[#0A84FF]'>biggest difference for you?</span>",
     isMultiSelect: true,
     options: [
       {
@@ -351,7 +352,7 @@ const quizQuestions: Question[] = [
   }
 ];
 
-type QuizState = 'welcome' | 'quiz' | 'intermediate' | 'weekly-pattern' | 'weekly-feedback' | 'first-30-days' | 'personal-info' | 'paywall' | 'loading' | 'analysis-complete' | 'goals' | 'current-balance' | 'potential-balance' | 'greeting-loading' | 'plan-built';
+type QuizState = 'welcome' | 'quiz' | 'intermediate' | 'weekly-pattern' | 'weekly-feedback' | 'first-30-days' | 'age' | 'personal-info' | 'paywall' | 'loading' | 'analysis-complete' | 'goals' | 'current-balance' | 'potential-balance' | 'greeting-loading' | 'plan-built';
 
 export default function App() {
   const [quizState, setQuizState] = useState<QuizState>('welcome');
@@ -359,8 +360,54 @@ export default function App() {
   const [answers, setAnswers] = useState<Record<number, string[] | string>>({});
   const [selectedOption, setSelectedOption] = useState<string[] | string | null>(null);
   const [weeklyPatternAnswers, setWeeklyPatternAnswers] = useState<{ frequency: string; portion: string } | null>(null);
+  const [selectedAge, setSelectedAge] = useState<string | null>(null);
   const [personalInfo, setPersonalInfo] = useState<{ firstName: string; age: string; email: string } | null>(null);
   const [selectedGoals, setSelectedGoals] = useState<string[]>([]);
+
+  // Calculate progress across the entire quiz flow
+  const getProgressSteps = () => {
+    const totalSteps = 17; // 12 questions + intermediate + 3 weekly screens + age screen
+    let currentStep = 0;
+
+    switch (quizState) {
+      case 'quiz':
+        if (currentQuestionIndex <= 2) {
+          // Questions 1-3
+          currentStep = currentQuestionIndex + 1;
+        } else if (currentQuestionIndex <= 5) {
+          // Questions 4-6 (after intermediate screen)
+          currentStep = currentQuestionIndex + 2; // +2 because intermediate is step 4
+        } else {
+          // Questions 7-12 (after weekly screens)
+          currentStep = currentQuestionIndex + 5; // +5 because intermediate + 3 weekly screens
+        }
+        break;
+      case 'intermediate':
+        currentStep = 4;
+        break;
+      case 'weekly-pattern':
+        currentStep = 8;
+        break;
+      case 'weekly-feedback':
+        currentStep = 9;
+        break;
+      case 'first-30-days':
+        currentStep = 10;
+        break;
+      case 'age':
+        currentStep = 17;
+        break;
+      case 'personal-info':
+        currentStep = 17; // Complete quiz progress
+        break;
+      default:
+        currentStep = 0;
+    }
+
+    return { current: currentStep, total: totalSteps };
+  };
+
+  const progressSteps = getProgressSteps();
 
   const handleStart = () => {
     setQuizState('quiz');
@@ -396,12 +443,15 @@ export default function App() {
         [quizQuestions[currentQuestionIndex].id]: selectedOption,
       });
 
-      // Show intermediate screen after question 6
-      if (currentQuestionIndex === 5) {
+      // Show intermediate screen after question 3
+      if (currentQuestionIndex === 2) {
         setQuizState('intermediate');
+      } else if (currentQuestionIndex === 5) {
+        // After question 6, show weekly pattern screens
+        setQuizState('weekly-pattern');
       } else if (currentQuestionIndex === quizQuestions.length - 1) {
-        // After last quiz question (question 12), show personal info screen
-        setQuizState('personal-info');
+        // After last quiz question (question 12), show age screen
+        setQuizState('age');
       } else if (currentQuestionIndex < quizQuestions.length - 1) {
         setCurrentQuestionIndex(currentQuestionIndex + 1);
         setSelectedOption(quizQuestions[currentQuestionIndex + 1].isMultiSelect ? [] : null);
@@ -410,6 +460,18 @@ export default function App() {
   };
 
   const handleBack = () => {
+    // Special case: If we're on question 4 (index 3), go back to intermediate screen
+    if (currentQuestionIndex === 3) {
+      setQuizState('intermediate');
+      return;
+    }
+    
+    // Special case: If we're on question 7 (index 6), go back to first-30-days screen
+    if (currentQuestionIndex === 6) {
+      setQuizState('first-30-days');
+      return;
+    }
+    
     if (currentQuestionIndex > 0) {
       setCurrentQuestionIndex(currentQuestionIndex - 1);
       const prevAnswer = answers[quizQuestions[currentQuestionIndex - 1].id];
@@ -421,9 +483,9 @@ export default function App() {
 
   const handleIntermediateBack = () => {
     setQuizState('quiz');
-    setCurrentQuestionIndex(5);
-    const prevAnswer = answers[quizQuestions[5].id];
-    setSelectedOption(prevAnswer || (quizQuestions[5].isMultiSelect ? [] : null));
+    setCurrentQuestionIndex(2);
+    const prevAnswer = answers[quizQuestions[2].id];
+    setSelectedOption(prevAnswer || (quizQuestions[2].isMultiSelect ? [] : null));
   };
 
   const handleRestart = () => {
@@ -440,16 +502,34 @@ export default function App() {
     return selectedOption !== null;
   };
 
+  // Get the last selected option for support text display
+  const getLastSelectedOption = () => {
+    if (Array.isArray(selectedOption) && selectedOption.length > 0) {
+      const lastValue = selectedOption[selectedOption.length - 1];
+      return currentQuestion.options.find(opt => opt.value === lastValue);
+    } else if (selectedOption) {
+      return currentQuestion.options.find(opt => opt.value === selectedOption);
+    }
+    return null;
+  };
+
   const currentQuestion = quizQuestions[currentQuestionIndex];
 
   // Function to split question for highlighting
   const getQuestionParts = (question: string, questionId: number) => {
-    // For question 1, highlight "blood sugar?"
+    // For question 1, highlight "food, blood sugar?"
     if (questionId === 1) {
-      const parts = question.split('blood sugar?');
+      const parts = question.split('food, blood sugar?');
       return {
-        main: parts[0] + 'blood sugar',
-        highlight: '?',
+        main: parts[0],
+        highlight: 'food, blood sugar?',
+      };
+    }
+    // For question 11, handle the span tag
+    if (questionId === 11) {
+      return {
+        main: "What kind of support would make the ",
+        highlight: "biggest difference for you?",
       };
     }
     // For other questions, highlight last 2 words
@@ -480,30 +560,25 @@ export default function App() {
               </button>
               <div className="flex items-center justify-center">
                 <ProgressBar
-                  current={currentQuestionIndex + 1}
-                  total={quizQuestions.length}
+                  current={progressSteps.current}
+                  total={progressSteps.total}
                 />
               </div>
             </div>
+          </div>
 
+          {/* Question Content */}
+          <div className="flex-1 pb-32 px-6">
             {/* Question Headline */}
-            <div className="px-6 py-3">
-              <h1 className="text-[32px] font-semibold leading-[120%] tracking-[0.4px] text-black mb-4">
+            <div className="py-3">
+              <h1 className="text-[24px] font-semibold leading-[120%] tracking-[0.4px] text-black mb-4">
                 {getQuestionParts(currentQuestion.question, currentQuestion.id).main}{' '}
                 <span className="text-[#0a84ff]">
                   {getQuestionParts(currentQuestion.question, currentQuestion.id).highlight}
                 </span>
               </h1>
-              <p className="text-[17px] font-medium leading-[22px] tracking-[-0.43px] text-[rgba(60,60,67,0.6)]">
-                Choose what speaks to you most.
-                <br />
-                No wrong answers here.
-              </p>
             </div>
-          </div>
 
-          {/* Question Content */}
-          <div className="flex-1 pb-48">
             <AnimatePresence mode="wait">
               <QuizQuestion
                 key={currentQuestion.id}
@@ -519,7 +594,37 @@ export default function App() {
           </div>
 
           {/* Bottom Button Section */}
-          <div className="fixed bottom-0 left-0 right-0 max-w-[430px] mx-auto bg-[#f2f2f7] pb-8 pt-4 px-6">
+          <div className="fixed bottom-0 left-0 right-0 max-w-[430px] mx-auto bg-[#f2f2f7] pb-2 pt-4 px-6 space-y-3">
+            {/* Support Text Card - appears above Next button */}
+            <AnimatePresence mode="wait">
+              {(() => {
+                const lastSelectedOption = getLastSelectedOption();
+                return lastSelectedOption ? (
+                  <motion.div
+                    key={lastSelectedOption.value}
+                    initial={{ opacity: 0, y: -5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -5 }}
+                    transition={{ duration: 0.15 }}
+                  >
+                    <div className="bg-white rounded-[24px] p-4">
+                      <div className="flex flex-col gap-1">
+                        {/* Title with checkmark */}
+                        <p className="text-[16px] font-medium leading-[22px] tracking-[-0.43px] text-[#2cbc50]">
+                          {getSupportTitle(lastSelectedOption.supportText)}
+                        </p>
+                        {/* Support text */}
+                        <p className="text-[16px] font-normal leading-[22px] tracking-[-0.43px] text-black">
+                          {lastSelectedOption.supportText}
+                        </p>
+                      </div>
+                    </div>
+                  </motion.div>
+                ) : null;
+              })()}
+            </AnimatePresence>
+
+            {/* Next Button */}
             <button
               onClick={handleNext}
               disabled={!hasSelection()}
@@ -539,9 +644,13 @@ export default function App() {
         <IntermediateScreen
           key="intermediate"
           onContinue={() => {
-            setQuizState('weekly-pattern');
+            setQuizState('quiz');
+            setCurrentQuestionIndex(3);
+            setSelectedOption(quizQuestions[3].isMultiSelect ? [] : null);
           }}
           onBack={handleIntermediateBack}
+          currentStep={progressSteps.current}
+          totalSteps={progressSteps.total}
         />
       )}
 
@@ -552,9 +661,14 @@ export default function App() {
             setQuizState('weekly-feedback');
           }}
           onBack={() => {
-            setQuizState('intermediate');
+            setQuizState('quiz');
+            setCurrentQuestionIndex(5);
+            const prevAnswer = answers[quizQuestions[5].id];
+            setSelectedOption(prevAnswer || (quizQuestions[5].isMultiSelect ? [] : null));
           }}
           onAnswer={setWeeklyPatternAnswers}
+          currentStep={progressSteps.current}
+          totalSteps={progressSteps.total}
         />
       )}
 
@@ -569,10 +683,12 @@ export default function App() {
           }}
           frequency={weeklyPatternAnswers.frequency}
           portionSize={weeklyPatternAnswers.portion}
+          currentStep={progressSteps.current}
+          totalSteps={progressSteps.total}
         />
       )}
 
-      {quizState === 'first-30-days' && (
+      {quizState === 'first-30-days' && weeklyPatternAnswers && (
         <First30DaysScreen
           key="first-30-days"
           onContinue={() => {
@@ -583,6 +699,29 @@ export default function App() {
           onBack={() => {
             setQuizState('weekly-feedback');
           }}
+          currentStep={progressSteps.current}
+          totalSteps={progressSteps.total}
+          frequency={weeklyPatternAnswers.frequency}
+          portionSize={weeklyPatternAnswers.portion}
+        />
+      )}
+
+      {quizState === 'age' && (
+        <AgeScreen
+          key="age"
+          onContinue={(age) => {
+            setSelectedAge(age);
+            setQuizState('personal-info');
+          }}
+          onBack={() => {
+            setQuizState('quiz');
+            setCurrentQuestionIndex(quizQuestions.length - 1);
+            const prevAnswer = answers[quizQuestions[quizQuestions.length - 1].id];
+            setSelectedOption(prevAnswer || (quizQuestions[quizQuestions.length - 1].isMultiSelect ? [] : null));
+          }}
+          currentStep={progressSteps.current}
+          totalSteps={progressSteps.total}
+          initialAge={selectedAge || undefined}
         />
       )}
 
@@ -591,15 +730,24 @@ export default function App() {
           key="personal-info"
           onContinue={(data) => {
             setPersonalInfo(data);
-            setQuizState('loading');
+            setQuizState('greeting-loading');
           }}
           onBack={() => {
-            setQuizState('quiz');
-            setCurrentQuestionIndex(quizQuestions.length - 1);
-            const prevAnswer = answers[quizQuestions[quizQuestions.length - 1].id];
-            setSelectedOption(prevAnswer || (quizQuestions[quizQuestions.length - 1].isMultiSelect ? [] : null));
+            setQuizState('age');
           }}
+          currentStep={progressSteps.current}
+          totalSteps={progressSteps.total}
           initialData={personalInfo || undefined}
+        />
+      )}
+
+      {quizState === 'greeting-loading' && personalInfo && (
+        <GreetingLoadingScreen
+          key="greeting-loading"
+          onComplete={() => {
+            setQuizState('loading');
+          }}
+          firstName={personalInfo.firstName}
         />
       )}
 
@@ -653,22 +801,12 @@ export default function App() {
         <PotentialBalanceScreen
           key="potential-balance"
           onContinue={() => {
-            setQuizState('greeting-loading');
+            setQuizState('plan-built');
           }}
           onBack={() => {
             setQuizState('current-balance');
           }}
           answers={answers}
-        />
-      )}
-
-      {quizState === 'greeting-loading' && personalInfo && (
-        <GreetingLoadingScreen
-          key="greeting-loading"
-          onComplete={() => {
-            setQuizState('plan-built');
-          }}
-          firstName={personalInfo.firstName}
         />
       )}
 
@@ -678,6 +816,9 @@ export default function App() {
           onComplete={() => {
             setQuizState('paywall');
           }}
+          onBack={() => {
+            setQuizState('greeting-loading');
+          }}
           firstName={personalInfo.firstName}
         />
       )}
@@ -685,7 +826,9 @@ export default function App() {
       {quizState === 'paywall' && (
         <PaywallScreen
           key="paywall"
-          onClose={handleRestart}
+          onClose={() => {
+            setQuizState('plan-built');
+          }}
           onStartTrial={handleRestart}
         />
       )}

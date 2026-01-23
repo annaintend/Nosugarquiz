@@ -65,39 +65,38 @@ export function GoalsScreen({ onContinue, onBack, initialGoals = [] }: GoalsScre
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.3 }}
-      className="min-h-screen bg-[#f2f2f7] flex flex-col"
-    >
-      {/* Header */}
-      <div className="bg-[#f2f2f7] sticky top-0 z-10">
-        {/* Back Button Section */}
-        <div className="h-[44px] relative flex items-center justify-center px-4">
+    <div className="fixed inset-0 bg-[#f2f2f7] flex flex-col">
+      {/* Fixed Header */}
+      <div className="flex-shrink-0 px-4 pt-[0px] pr-[16px] pb-[0px] pl-[4px]">
+        <div className="h-[44px] relative flex items-center justify-center">
           <button
             onClick={onBack}
-            className="absolute left-4 bg-white rounded-full w-[34px] h-[34px] flex items-center justify-center"
+            className="absolute left-4 bg-white rounded-full w-[34px] h-[34px] flex items-center justify-center active:scale-95 transition-transform"
           >
             <ChevronLeft className="w-5 h-5" />
           </button>
         </div>
+      </div>
 
+      {/* Scrollable Content */}
+      <div className="flex-1 overflow-y-auto px-6 pb-24">
         {/* Title Section */}
-        <div className="px-6 py-3">
-          <h1 className="text-[32px] font-semibold leading-[120%] tracking-[0.4px] text-black mb-4">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          className="pt-2 pb-6"
+        >
+          <h1 className="text-[28px] font-semibold leading-[120%] tracking-[0.4px] text-black mb-4">
             Choose your{' '}
             <span className="text-[#0a84ff]">goals</span>
           </h1>
-          <p className="text-[17px] font-medium leading-[22px] tracking-[-0.43px] text-[rgba(60,60,67,0.6)]">
+          <p className="text-[17px] font-normal leading-[22px] tracking-[-0.43px] text-[rgba(60,60,67,0.6)]">
             Select all the outcomes you want to achieve by improving blood sugar stability
           </p>
-        </div>
-      </div>
+        </motion.div>
 
-      {/* Goal Cards */}
-      <div className="flex-1 px-6 pt-6 pb-32">
+        {/* Goal Cards */}
         <div className="space-y-3">
           {goalOptions.map((goal, index) => {
             const isSelected = selectedGoals.includes(goal.id);
@@ -109,10 +108,10 @@ export function GoalsScreen({ onContinue, onBack, initialGoals = [] }: GoalsScre
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.05, duration: 0.3 }}
                 onClick={() => toggleGoal(goal.id)}
-                className={`w-full p-5 rounded-[20px] text-left transition-all ${
+                className={`w-full p-5 rounded-[32px] text-left transition-all border-2 ${
                   isSelected
-                    ? 'bg-[#0a84ff] shadow-lg'
-                    : 'bg-white'
+                    ? 'bg-[#E8F3FF] border-[#0a84ff]'
+                    : 'bg-white border-transparent'
                 }`}
               >
                 <div className="flex items-start gap-4">
@@ -124,22 +123,22 @@ export function GoalsScreen({ onContinue, onBack, initialGoals = [] }: GoalsScre
                   {/* Content */}
                   <div className="flex-1">
                     <h3 className={`text-[17px] font-semibold leading-[22px] tracking-[-0.43px] mb-1 ${
-                      isSelected ? 'text-white' : 'text-black'
+                      isSelected ? 'text-[#0a84ff]' : 'text-black'
                     }`}>
                       {goal.title}
                     </h3>
-                    <p className={`text-[15px] leading-[20px] tracking-[-0.24px] ${
-                      isSelected ? 'text-white/90' : 'text-[rgba(60,60,67,0.6)]'
+                    <p className={`text-[15px] font-normal leading-[20px] tracking-[-0.24px] ${
+                      isSelected ? 'text-[#0a84ff]' : 'text-[rgba(60,60,67,0.6)]'
                     }`}>
                       {goal.description}
                     </p>
                   </div>
 
                   {/* Checkbox */}
-                  <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all ${
+                  <div className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 transition-all ${
                     isSelected
-                      ? 'bg-white border-white'
-                      : 'bg-transparent border-[rgba(60,60,67,0.3)]'
+                      ? 'bg-[#0a84ff] border-2 border-[#0a84ff]'
+                      : 'bg-transparent border-2 border-[rgba(60,60,67,0.3)]'
                   }`}>
                     {isSelected && (
                       <svg
@@ -151,7 +150,7 @@ export function GoalsScreen({ onContinue, onBack, initialGoals = [] }: GoalsScre
                       >
                         <path
                           d="M1 5.5L5 9.5L13 1.5"
-                          stroke="#0a84ff"
+                          stroke="white"
                           strokeWidth="2"
                           strokeLinecap="round"
                           strokeLinejoin="round"
@@ -166,20 +165,20 @@ export function GoalsScreen({ onContinue, onBack, initialGoals = [] }: GoalsScre
         </div>
       </div>
 
-      {/* Bottom Button Section */}
-      <div className="fixed bottom-0 left-0 right-0 max-w-[430px] mx-auto bg-[#f2f2f7] pb-8 pt-4 px-6">
+      {/* Fixed Bottom Button */}
+      <div className="absolute bottom-0 left-0 right-0 bg-[#f2f2f7] pb-6 pt-4 px-6">
         <button
           onClick={handleContinue}
           disabled={selectedGoals.length === 0}
-          className={`w-full py-4 rounded-[20px] transition-colors text-[17px] font-medium leading-[22px] tracking-[-0.43px] ${
+          className={`w-full py-4 rounded-[20px] transition-all text-[17px] font-medium leading-[22px] tracking-[-0.43px] active:scale-[0.98] ${
             selectedGoals.length > 0
               ? 'bg-[#f14e58] text-white'
               : 'bg-gray-300 text-gray-500 cursor-not-allowed'
           }`}
         >
-          Continue
+          Add to my plan
         </button>
       </div>
-    </motion.div>
+    </div>
   );
 }
