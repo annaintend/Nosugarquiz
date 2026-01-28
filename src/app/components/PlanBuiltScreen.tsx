@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { ChevronLeft } from 'lucide-react';
-import logoImage from '@/assets/pancakes.png';
+import logoImage from '@/assets/sugar-white.png';
 
 interface PlanBuiltScreenProps {
   onComplete: () => void;
