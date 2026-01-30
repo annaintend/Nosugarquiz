@@ -27,13 +27,13 @@ export function PersonalInfoScreen({ onContinue, onBack, currentStep, totalSteps
   };
 
   return (
-    <div className="fixed inset-0 bg-[#f2f2f7] flex items-center justify-center">
+    <div className="fixed inset-0 bg-[#f2f2f7] flex items-center justify-center overflow-hidden">
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         transition={{ duration: 0.3 }}
-        className="w-full max-w-[430px] h-full bg-[#f2f2f7] flex flex-col relative"
+        className="w-full max-w-[430px] h-full bg-[#f2f2f7] flex flex-col relative overflow-hidden"
       >
         {/* Header */}
         <div className="bg-[#f2f2f7] sticky top-0 z-10">
@@ -63,7 +63,7 @@ export function PersonalInfoScreen({ onContinue, onBack, currentStep, totalSteps
         </div>
 
         {/* Form Content */}
-        <div className="flex-1 px-6 pt-6 pb-32 overflow-y-auto">
+        <div className="flex-1 px-6 pt-6 pb-32 bg-[#f2f2f7]">
           <div className="space-y-[20px]">
             {/* First Name */}
             <div>
