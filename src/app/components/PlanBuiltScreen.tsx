@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { ChevronLeft } from 'lucide-react';
+import logoImage from 'figma:asset/165b9628374c2afe18a87818797525922cc22a7b.png';
 
 interface PlanBuiltScreenProps {
   onComplete: () => void;
@@ -229,7 +230,7 @@ export function PlanBuiltScreen({ onComplete, firstName, onBack }: PlanBuiltScre
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2, duration: 0.6 }}
-            className="text-center mb-6 mt-4"
+            className="text-center mb-12 mt-4"
           >
             <h1 className="text-[28px] font-semibold leading-[120%] tracking-[0.4px] text-black mb-4">
               Let's make it<br />
@@ -302,7 +303,7 @@ export function PlanBuiltScreen({ onComplete, firstName, onBack }: PlanBuiltScre
             <div className="bg-gradient-to-br from-[#ff006e] via-[#ff3d6f] to-[#ff5733] p-6 shadow-lg rounded-t-[40px] rounded-b-[0px]">
               {/* Header with Logo and Book Icon */}
               <div className="flex items-center justify-end mb-32">
-                <img src="/logo.png" alt="#sugar.no" className="h-[32px] w-auto" />
+                <img src={logoImage} alt="#sugar.no" className="h-[32px] w-auto" />
               </div>
 
               {/* Active Streak */}

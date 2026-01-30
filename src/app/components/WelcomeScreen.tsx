@@ -1,5 +1,6 @@
 import { motion } from 'motion/react';
 import svgPaths from "@/imports/svg-4jiaeetmq9";
+import heroImage from "figma:asset/900c01723b11c15f5044d4a3e9bde07381387f3a.png";
 
 interface WelcomeScreenProps {
   onStart: () => void;
@@ -14,7 +15,7 @@ export function WelcomeScreen({ onStart }: WelcomeScreenProps) {
           {/* Scaled Container for Images and Review */}
           <div className="absolute inset-0 flex items-center justify-center overflow-visible">
             <motion.img
-              src="/hero-image.png"
+              src={heroImage}
               alt="Before and after transformation with testimonial"
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
