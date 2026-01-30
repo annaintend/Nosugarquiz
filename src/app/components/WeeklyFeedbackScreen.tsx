@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { motion } from 'motion/react';
 import { ChevronLeft, Check } from 'lucide-react';
 import { ProgressBar } from '@/app/components/ProgressBar';
-import imgDoughnut3D from "figma:asset/05b032611d53a344beb07d44c76066a4c74f4bf5.png";
 
 interface WeeklyFeedbackScreenProps {
   onContinue: () => void;
@@ -392,7 +391,7 @@ export function WeeklyFeedbackScreen({
                     <img 
                       alt="Impact visualization" 
                       className="absolute left-0 top-[-2px] w-full h-full object-contain" 
-                      src={imgDoughnut3D} 
+                      src="/doughnut-3d.png" 
                     />
                   </div>
                 </div>
