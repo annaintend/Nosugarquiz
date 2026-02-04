@@ -33,6 +33,7 @@ interface Question {
 declare global {
   interface Window {
     amplitude: any | undefined
+    fbq: any | undefined
   }
 }
 

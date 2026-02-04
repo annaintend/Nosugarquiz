@@ -29,6 +29,9 @@ export function PaywallScreen({ onClose, onStartTrial }: PaywallScreenProps) {
 
   useEffect(() => {
     window?.amplitude?.track?.("plan_selection_viewed")
+
+
+    window?.fbq('track', 'InitiateCheckout');
   }, [])
 
   const dates = getTrialDates();

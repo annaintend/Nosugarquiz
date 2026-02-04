@@ -22,11 +22,14 @@ export function PersonalInfoScreen({ onContinue, onBack, currentStep, totalSteps
 
   const handleContinue = () => {
     if (isValid()) {
-      onContinue({ firstName, age, email });
       window?.amplitude?.track?.("lead_form_submitted", {
         has_name: !!firstName.length,
         has_email: !!email.length
       })
+
+      window?.fbq('track', 'CompleteRegistration');
+
+      onContinue({ firstName, age, email });
     }
   };
 
