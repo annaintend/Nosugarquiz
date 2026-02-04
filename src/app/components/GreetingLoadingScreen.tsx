@@ -16,7 +16,7 @@ export function GreetingLoadingScreen({ onComplete, firstName }: GreetingLoading
   }, [onComplete]);
 
   useEffect(() => {
-    window.amplitude?.track?.("plan_generation_started")
+    window?.amplitude?.track?.("plan_generation_started")
   }, [])
 
   return (
